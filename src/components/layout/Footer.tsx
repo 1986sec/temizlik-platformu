@@ -25,8 +25,8 @@ const Footer = () => {
               <span className="text-xl font-bold">AnlıkEleman</span>
             </div>
             <p className="text-gray-400 text-sm leading-relaxed">
-              Temizlik sektöründe çalışanlar ve işverenler için Türkiye'nin 
-              en güvenilir iş arama platformu.
+              Gündelik çalışanlar ve işverenler için Türkiye'nin 
+              en güvenilir iş platformu.
             </p>
             <div className="flex space-x-4">
               <a href="#" className="text-gray-400 hover:text-primary-400 transition-colors duration-200">
@@ -88,11 +88,6 @@ const Footer = () => {
               <li>
                 <a href="#" className="text-gray-400 hover:text-white transition-colors duration-200">
                   Premium Üyelik
-                </a>
-              </li>
-              <li>
-                <a href="#" className="text-gray-400 hover:text-white transition-colors duration-200">
-                  Kariyer Danışmanlığı
                 </a>
               </li>
             </ul>
