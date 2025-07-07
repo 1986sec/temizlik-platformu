@@ -6,7 +6,6 @@ import {
   Sparkles, 
   Users, 
   Building2, 
-  Shield,
   LogIn,
   UserPlus,
   LogOut,
@@ -31,7 +30,6 @@ const Navbar = () => {
     { path: '/isler', label: 'İş İlanları', icon: Briefcase },
     { path: '/is-arayan', label: 'İş Arayan', icon: Users },
     { path: '/isveren', label: 'İşveren', icon: Building2 },
-    ...(profile?.user_type === 'admin' ? [{ path: '/admin', label: 'Admin', icon: Shield }] : []),
   ];
 
   const handleSignOut = async () => {

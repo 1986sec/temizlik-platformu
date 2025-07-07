@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Mail, Lock, Eye, EyeOff, Sparkles, AlertCircle, CheckCircle, Shield } from 'lucide-react';
+import { Mail, Lock, Eye, EyeOff, Sparkles, AlertCircle, CheckCircle } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 
 const LoginPage = () => {
@@ -108,7 +108,6 @@ const LoginPage = () => {
           {/* Email Verification Notice */}
           <div className="mb-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
             <div className="flex items-start space-x-3">
-              <Shield className="h-5 w-5 text-blue-600 mt-0.5 flex-shrink-0" />
               <div>
                 <h3 className="font-medium text-blue-900 mb-1">E-posta Doğrulama</h3>
                 <p className="text-sm text-blue-700 mb-2">
