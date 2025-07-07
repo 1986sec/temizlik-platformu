@@ -275,17 +275,14 @@ export const db = {
       const result = await supabase
         .from('job_categories')
         .select('*')
-        .eq('is_active', true)
-        .order('sort_order');
-      
+        .order('name', { ascending: true });
       if (result.error) {
         console.error('Get job categories error:', result.error);
       }
-      
       return result;
     } catch (error) {
       console.error('Get job categories error:', error);
-      return { data: [], error: { message: 'İş kategorileri alınamadı' } };
+      return { data: [], error: { message: 'Kategoriler alınamadı' } };
     }
   },
 
@@ -301,40 +298,18 @@ export const db = {
           category:job_categories(name)
         `)
         .eq('status', 'active');
-
-      // Apply filters
-      if (filters.category_id) {
-        query = query.eq('category_id', filters.category_id);
-      }
-      
-      if (filters.city) {
-        query = query.eq('city', filters.city);
-      }
-      
-      if (filters.job_type) {
-        query = query.eq('job_type', filters.job_type);
-      }
-      
-      if (filters.is_remote !== undefined) {
-        query = query.eq('is_remote', filters.is_remote);
-      }
-      
-      if (filters.salary_min) {
-        query = query.gte('salary_max', filters.salary_min);
-      }
-      
-      if (filters.salary_max) {
-        query = query.lte('salary_min', filters.salary_max);
-      }
-
+      if (filters.category_id) query = query.eq('category_id', filters.category_id);
+      if (filters.city) query = query.eq('city', filters.city);
+      if (filters.job_type) query = query.eq('job_type', filters.job_type);
+      if (filters.is_remote !== undefined) query = query.eq('is_remote', filters.is_remote);
+      if (filters.salary_min) query = query.gte('salary_max', filters.salary_min);
+      if (filters.salary_max) query = query.lte('salary_min', filters.salary_max);
       const result = await query
         .order('created_at', { ascending: false })
         .range(filters.offset || 0, (filters.offset || 0) + (filters.limit || 20) - 1);
-      
       if (result.error) {
         console.error('Get job postings error:', result.error);
       }
-      
       return result;
     } catch (error) {
       console.error('Get job postings error:', error);
@@ -354,11 +329,9 @@ export const db = {
         `)
         .eq('id', jobId)
         .single();
-      
       if (result.error) {
         console.error('Get job posting error:', result.error);
       }
-      
       return result;
     } catch (error) {
       console.error('Get job posting error:', error);
@@ -366,149 +339,46 @@ export const db = {
     }
   },
 
-  createJobPosting: async (jobData: any) => {
-    try {
-      // jobData içindeki created_at ve updated_at varsa, spread'den sonra ekle
-      const { created_at, updated_at, ...rest } = jobData;
-      const result = await supabase
-        .from('job_postings')
-        .insert({
-          ...rest,
-          created_at: created_at || new Date().toISOString(),
-          updated_at: updated_at || new Date().toISOString()
-        })
-        .select()
-        .single();
-      
-      if (result.error) {
-        console.error('Create job posting error:', result.error);
-      }
-      
-      return result;
-    } catch (error) {
-      console.error('Create job posting error:', error);
-      return { data: null, error: { message: 'İş ilanı oluşturulamadı' } };
-    }
-  },
-
-  updateJobPosting: async (jobId: string, jobData: any) => {
-    try {
-      const { updated_at, ...rest } = jobData;
-      const result = await supabase
-        .from('job_postings')
-        .update({
-          ...rest,
-          updated_at: updated_at || new Date().toISOString()
-        })
-        .eq('id', jobId)
-        .select()
-        .single();
-      
-      if (result.error) {
-        console.error('Update job posting error:', result.error);
-      }
-      
-      return result;
-    } catch (error) {
-      console.error('Update job posting error:', error);
-      return { data: null, error: { message: 'İş ilanı güncellenemedi' } };
-    }
-  },
-
   // Applications
-  getApplications: async (userId: string, userType: 'job_seeker' | 'employer') => {
+  getApplications: async (filters: any = {}) => {
     try {
-      if (userType === 'job_seeker') {
-        const result = await supabase
-          .from('applications')
-          .select(`
-            *,
-            job:job_postings(*, company:companies(*))
-          `)
-          .eq('applicant_id', userId)
-          .order('applied_at', { ascending: false });
-        
-        if (result.error) {
-          console.error('Get applications error:', result.error);
-        }
-        
-        return result;
-      } else {
-        // For employers, get applications for their job postings
-        const { data: jobIds, error: jobError } = await supabase
-          .from('job_postings')
-          .select('id')
-          .eq('employer_id', userId);
-
-        if (jobError) {
-          console.error('Get employer jobs error:', jobError);
-          return { data: [], error: jobError };
-        }
-
-        if (!jobIds || jobIds.length === 0) {
-          return { data: [], error: null };
-        }
-
-        const result = await supabase
-          .from('applications')
-          .select(`
-            *,
-            applicant:profiles(*),
-            job:job_postings(*)
-          `)
-          .in('job_id', jobIds.map(job => job.id))
-          .order('applied_at', { ascending: false });
-        
-        if (result.error) {
-          console.error('Get applications error:', result.error);
-        }
-        
-        return result;
+      let query = supabase
+        .from('applications')
+        .select(`
+          *,
+          job:job_postings(title, company:companies(name)),
+          applicant:profiles(first_name, last_name, email)
+        `);
+      if (filters.job_id) query = query.eq('job_id', filters.job_id);
+      if (filters.applicant_id) query = query.eq('applicant_id', filters.applicant_id);
+      if (filters.status) query = query.eq('status', filters.status);
+      const result = await query
+        .order('created_at', { ascending: false })
+        .range(filters.offset || 0, (filters.offset || 0) + (filters.limit || 20) - 1);
+      if (result.error) {
+        console.error('Get applications error:', result.error);
       }
+      return result;
     } catch (error) {
       console.error('Get applications error:', error);
       return { data: [], error: { message: 'Başvurular alınamadı' } };
     }
   },
 
-  createApplication: async (applicationData: any) => {
-    try {
-      const result = await supabase
-        .from('applications')
-        .insert({
-          ...applicationData,
-          applied_at: new Date().toISOString()
-        })
-        .select()
-        .single();
-      
-      if (result.error) {
-        console.error('Create application error:', result.error);
-      }
-      
-      return result;
-    } catch (error) {
-      console.error('Create application error:', error);
-      return { data: null, error: { message: 'Başvuru gönderilemedi' } };
-    }
-  },
-
-  updateApplication: async (id: string, updates: any) => {
+  updateApplication: async (applicationId: string, updates: any) => {
     try {
       const result = await supabase
         .from('applications')
         .update({
           ...updates,
-          reviewed_at: new Date().toISOString()
+          updated_at: new Date().toISOString()
         })
-        .eq('id', id)
+        .eq('id', applicationId)
         .select()
         .single();
-      
       if (result.error) {
         console.error('Update application error:', result.error);
       }
-      
       return result;
     } catch (error) {
       console.error('Update application error:', error);
@@ -722,20 +592,18 @@ export const db = {
   },
 
   // Notifications
-  getNotifications: async (userId: string) => {
+  getNotifications: async (userId: string, limit: number = 20) => {
     try {
-      const result = await supabase
+      const { data, error } = await supabase
         .from('notifications')
         .select('*')
         .eq('user_id', userId)
         .order('created_at', { ascending: false })
-        .limit(50);
-      
-      if (result.error) {
-        console.error('Get notifications error:', result.error);
+        .limit(limit);
+      if (error) {
+        console.error('Get notifications error:', error);
       }
-      
-      return result;
+      return { data, error };
     } catch (error) {
       console.error('Get notifications error:', error);
       return { data: [], error: { message: 'Bildirimler alınamadı' } };
@@ -958,25 +826,6 @@ export const db = {
     }
   },
 
-  // Job Posting Management
-  getJobCategories: async () => {
-    try {
-      const result = await supabase
-        .from('job_categories')
-        .select('*')
-        .order('name', { ascending: true });
-      
-      if (result.error) {
-        console.error('Get job categories error:', result.error);
-      }
-      
-      return result;
-    } catch (error) {
-      console.error('Get job categories error:', error);
-      return { data: [], error: { message: 'Kategoriler alınamadı' } };
-    }
-  },
-
   getUserCompanies: async (userId: string) => {
     try {
       const result = await supabase
@@ -1011,167 +860,6 @@ export const db = {
     } catch (error) {
       console.error('Delete job posting error:', error);
       return { data: null, error: { message: 'İş ilanı silinemedi' } };
-    }
-  },
-
-  getJobPosting: async (jobId: string) => {
-    try {
-      const result = await supabase
-        .from('job_postings')
-        .select(`
-          *,
-          employer:profiles(first_name, last_name, email, phone),
-          company:companies(name, city, address),
-          category:job_categories(name)
-        `)
-        .eq('id', jobId)
-        .single();
-      
-      if (result.error) {
-        console.error('Get job posting error:', result.error);
-      }
-      
-      return result;
-    } catch (error) {
-      console.error('Get job posting error:', error);
-      return { data: null, error: { message: 'İş ilanı bulunamadı' } };
-    }
-  },
-
-  getJobPostings: async (filters: any = {}) => {
-    try {
-      let query = supabase
-        .from('job_postings')
-        .select(`
-          *,
-          employer:profiles(first_name, last_name),
-          company:companies(name, city),
-          category:job_categories(name)
-        `)
-        .eq('status', 'active');
-
-      // Apply filters
-      if (filters.category_id) {
-        query = query.eq('category_id', filters.category_id);
-      }
-      
-      if (filters.city) {
-        query = query.eq('city', filters.city);
-      }
-      
-      if (filters.job_type) {
-        query = query.eq('job_type', filters.job_type);
-      }
-      
-      if (filters.is_remote !== undefined) {
-        query = query.eq('is_remote', filters.is_remote);
-      }
-      
-      if (filters.salary_min) {
-        query = query.gte('salary_max', filters.salary_min);
-      }
-      
-      if (filters.salary_max) {
-        query = query.lte('salary_min', filters.salary_max);
-      }
-
-      const result = await query
-        .order('created_at', { ascending: false })
-        .range(filters.offset || 0, (filters.offset || 0) + (filters.limit || 20) - 1);
-      
-      if (result.error) {
-        console.error('Get job postings error:', result.error);
-      }
-      
-      return result;
-    } catch (error) {
-      console.error('Get job postings error:', error);
-      return { data: [], error: { message: 'İş ilanları alınamadı' } };
-    }
-  },
-
-  // Application System
-  createApplication: async (applicationData: any) => {
-    try {
-      const result = await supabase
-        .from('applications')
-        .insert({
-          ...applicationData,
-          created_at: new Date().toISOString(),
-          updated_at: new Date().toISOString()
-        })
-        .select()
-        .single();
-      
-      if (result.error) {
-        console.error('Create application error:', result.error);
-      }
-      
-      return result;
-    } catch (error) {
-      console.error('Create application error:', error);
-      return { data: null, error: { message: 'Başvuru oluşturulamadı' } };
-    }
-  },
-
-  getApplications: async (filters: any = {}) => {
-    try {
-      let query = supabase
-        .from('applications')
-        .select(`
-          *,
-          job:job_postings(title, company:companies(name)),
-          applicant:profiles(first_name, last_name, email)
-        `);
-
-      // Apply filters
-      if (filters.job_id) {
-        query = query.eq('job_id', filters.job_id);
-      }
-      
-      if (filters.applicant_id) {
-        query = query.eq('applicant_id', filters.applicant_id);
-      }
-      
-      if (filters.status) {
-        query = query.eq('status', filters.status);
-      }
-
-      const result = await query
-        .order('created_at', { ascending: false })
-        .range(filters.offset || 0, (filters.offset || 0) + (filters.limit || 20) - 1);
-      
-      if (result.error) {
-        console.error('Get applications error:', result.error);
-      }
-      
-      return result;
-    } catch (error) {
-      console.error('Get applications error:', error);
-      return { data: [], error: { message: 'Başvurular alınamadı' } };
-    }
-  },
-
-  updateApplication: async (applicationId: string, updates: any) => {
-    try {
-      const result = await supabase
-        .from('applications')
-        .update({
-          ...updates,
-          updated_at: new Date().toISOString()
-        })
-        .eq('id', applicationId)
-        .select()
-        .single();
-      
-      if (result.error) {
-        console.error('Update application error:', result.error);
-      }
-      
-      return result;
-    } catch (error) {
-      console.error('Update application error:', error);
-      return { data: null, error: { message: 'Başvuru güncellenemedi' } };
     }
   },
 
@@ -1473,26 +1161,6 @@ export const db = {
   },
 
   // Notification System
-  getNotifications: async (userId: string, limit: number = 20) => {
-    try {
-      const { data, error } = await supabase
-        .from('notifications')
-        .select('*')
-        .eq('user_id', userId)
-        .order('created_at', { ascending: false })
-        .limit(limit);
-      
-      if (error) {
-        console.error('Get notifications error:', error);
-      }
-      
-      return { data, error };
-    } catch (error) {
-      console.error('Get notifications error:', error);
-      return { data: [], error: { message: 'Bildirimler alınamadı' } };
-    }
-  },
-
   markNotificationsAsRead: async (userId: string, notificationIds?: string[]) => {
     try {
       const { data, error } = await supabase
