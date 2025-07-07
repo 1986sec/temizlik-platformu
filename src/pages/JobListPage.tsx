@@ -13,7 +13,8 @@ import {
   Briefcase,
   X,
   Sliders,
-  Calendar
+  Calendar,
+  AlertCircle
 } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { db } from '../lib/supabase';
@@ -57,6 +58,7 @@ const JobListPage = () => {
   const [selectedCategory, setSelectedCategory] = useState('');
   const [selectedJobType, setSelectedJobType] = useState('');
   const [isRemoteOnly, setIsRemoteOnly] = useState(false);
+  const [isDailyOnly, setIsDailyOnly] = useState(false);
   const [salaryRange, setSalaryRange] = useState({ min: '', max: '' });
   const [showFilters, setShowFilters] = useState(false);
   
@@ -66,7 +68,7 @@ const JobListPage = () => {
   const [totalJobs, setTotalJobs] = useState(0);
   
   // Data
-  const [categories, setCategories] = useState([]);
+  const [categories, setCategories] = useState<any[]>([]);
   const [cities, setCities] = useState([
     'İstanbul', 'Ankara', 'İzmir', 'Bursa', 'Antalya', 'Adana', 'Konya', 'Gaziantep', 
     'Şanlıurfa', 'Kocaeli', 'Mersin', 'Diyarbakır', 'Hatay', 'Manisa', 'Kayseri',
@@ -77,7 +79,7 @@ const JobListPage = () => {
   useEffect(() => {
     loadCategories();
     loadJobs();
-  }, [currentPage, searchTerm, selectedCity, selectedCategory, selectedJobType, isRemoteOnly, salaryRange]);
+  }, [currentPage, searchTerm, selectedCity, selectedCategory, selectedJobType, isRemoteOnly, salaryRange, isDailyOnly]);
 
   const loadCategories = async () => {
     try {
@@ -99,8 +101,8 @@ const JobListPage = () => {
         search: searchTerm,
         city: selectedCity,
         category_id: selectedCategory,
-        job_type: selectedJobType,
-        is_remote: isRemoteOnly ? true : undefined,
+        job_type: isDailyOnly ? 'temporary' : selectedJobType,
+        is_remote: undefined, // Uzaktan çalışma filtresi kaldırıldı
         salary_min: salaryRange.min ? parseInt(salaryRange.min) : undefined,
         salary_max: salaryRange.max ? parseInt(salaryRange.max) : undefined,
         offset: (currentPage - 1) * 12,
@@ -148,7 +150,8 @@ const JobListPage = () => {
     setSelectedCity('');
     setSelectedCategory('');
     setSelectedJobType('');
-    setIsRemoteOnly(false);
+    setIsRemoteOnly(false); // Kaldırılacak
+    setIsDailyOnly(false); // YENİ
     setSalaryRange({ min: '', max: '' });
     setCurrentPage(1);
   };
@@ -276,14 +279,22 @@ const JobListPage = () => {
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">Çalışma Şekli</label>
                   <div className="flex items-center space-x-2">
-                    <input
+                    {/* <input
                       type="checkbox"
                       id="remote"
                       checked={isRemoteOnly}
                       onChange={(e) => setIsRemoteOnly(e.target.checked)}
                       className="rounded border-gray-300 text-primary-600 focus:ring-primary-500"
                     />
-                    <label htmlFor="remote" className="text-sm text-gray-700">Sadece uzaktan çalışma</label>
+                    <label htmlFor="remote" className="text-sm text-gray-700">Sadece uzaktan çalışma</label> */}
+                    <input
+                      type="checkbox"
+                      id="daily"
+                      checked={isDailyOnly}
+                      onChange={(e) => setIsDailyOnly(e.target.checked)}
+                      className="rounded border-gray-300 text-primary-600 focus:ring-primary-500"
+                    />
+                    <label htmlFor="daily" className="text-sm text-gray-700">Sadece gündelik işler</label>
                   </div>
                 </div>
               </div>
