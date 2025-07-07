@@ -78,12 +78,7 @@ const HomePage = () => {
       icon: CheckCircle,
       title: 'Doğrulanmış İşverenler',
       description: 'Tüm işverenler kimlik ve belge kontrolünden geçer.'
-    },
-    {
-      icon: TrendingUp,
-      title: 'Kariyer Geliştirme',
-      description: 'Eğitim ve sertifika programları ile kendinizi geliştirin.'
-    },
+    }
   ];
 
   const formatSalary = (min: number, max: number) => {
