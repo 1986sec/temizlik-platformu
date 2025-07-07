@@ -121,23 +121,23 @@ const AdminPage = () => {
 
   return (
     <div className="pt-16 min-h-screen bg-gray-50">
-      {/* Header */}
+        {/* Header */}
       <div className="bg-white shadow-sm border-b">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
           <div className="flex items-center justify-between">
             <div>
               <h1 className="text-2xl font-bold text-gray-900">Yönetici Paneli</h1>
               <p className="text-gray-600">Hoş geldiniz, {profile?.first_name} {profile?.last_name}</p>
-            </div>
-            <div className="flex items-center space-x-4">
-              <button className="btn-outline flex items-center space-x-2">
-                <Settings className="h-4 w-4" />
+          </div>
+          <div className="flex items-center space-x-4">
+            <button className="btn-outline flex items-center space-x-2">
+              <Settings className="h-4 w-4" />
                 <span>Sistem Ayarları</span>
-              </button>
+            </button>
             </div>
           </div>
+          </div>
         </div>
-      </div>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Stats Cards */}
@@ -244,9 +244,9 @@ const AdminPage = () => {
                             <div className="h-3 bg-gray-200 rounded w-1/2"></div>
                           </div>
                         ))}
-                      </div>
+                    </div>
                     ) : dashboardData.pendingJobs.length > 0 ? (
-                      <div className="space-y-3">
+                    <div className="space-y-3">
                         {dashboardData.pendingJobs.slice(0, 3).map((job: any) => (
                           <div key={job.id} className="bg-white rounded p-3 border">
                             <div className="flex items-center justify-between">
@@ -280,7 +280,7 @@ const AdminPage = () => {
                   <div className="bg-gray-50 rounded-lg p-6">
                     <h3 className="text-lg font-semibold text-gray-900 mb-4">Son Kayıt Olan Kullanıcılar</h3>
                     {loading ? (
-                      <div className="space-y-3">
+                    <div className="space-y-3">
                         {[...Array(3)].map((_, index) => (
                           <div key={index} className="bg-white rounded p-3 animate-pulse">
                             <div className="h-4 bg-gray-200 rounded w-3/4 mb-2"></div>
@@ -368,7 +368,7 @@ const AdminPage = () => {
                       <AlertTriangle className="h-12 w-12 text-gray-300 mx-auto mb-3" />
                       <h3 className="text-lg font-medium text-gray-900 mb-2">Bekleyen Şikayet Yok</h3>
                       <p className="text-gray-600">Tüm şikayetler çözülmüş durumda.</p>
-                    </div>
+                  </div>
                   )}
                 </div>
               </div>
@@ -463,8 +463,8 @@ const AdminPage = () => {
                   <AlertTriangle className="h-16 w-16 text-gray-300 mx-auto mb-4" />
                   <h3 className="text-lg font-medium text-gray-900 mb-2">Şikayet Yönetimi</h3>
                   <p className="text-gray-600">Bu özellik yakında eklenecek.</p>
-                </div>
-              </div>
+                          </div>
+                        </div>
             )}
 
             {/* Payments Tab */}
@@ -511,7 +511,7 @@ const AdminPage = () => {
                         placeholder="Kullanıcı ara..."
                         className="pl-10 pr-4 py-2 border border-gray-300 rounded-lg text-sm"
                       />
-                    </div>
+                  </div>
                     <select className="border border-gray-300 rounded-lg px-3 py-2 text-sm">
                       <option>Tüm Kullanıcılar</option>
                       <option>İş Arayanlar</option>

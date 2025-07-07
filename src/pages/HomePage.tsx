@@ -104,15 +104,14 @@ const HomePage = () => {
         
         <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <div className="animate-fade-in">
-            <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold text-gray-900 mb-6">
-              Temizlik Sektöründe
-              <span className="block text-transparent bg-clip-text cleaning-gradient">
-                Yeni Nesil Kariyer
-              </span>
+            <h1 className="text-4xl md:text-5xl font-bold mb-4">
+              Gündelik İşçilere Özel Güvenilir Platform
             </h1>
-            <p className="text-xl md:text-2xl text-gray-600 mb-12 max-w-3xl mx-auto leading-relaxed">
-              İş arayanlar ve işverenler için güvenli, hızlı ve etkili 
-              bir platform. Hayalinizdeki işe ya da ideal elemanınıza ulaşın.
+            <h2 className="text-2xl md:text-3xl font-bold mb-4 text-primary">
+              Deneyimli Garson, Komi ve Gündelik Personel Burada
+            </h2>
+            <p className="mb-8 text-lg text-gray-700 max-w-2xl mx-auto">
+              Gündelik iş arayanlar ve işverenler için hızlı, güvenli ve şeffaf buluşma noktası. Deneyimli garson, komi ve diğer gündelik personel ihtiyaçlarınız için en doğru adres.
             </p>
             
             <div className="flex flex-col sm:flex-row justify-center items-center space-y-4 sm:space-y-0 sm:space-x-6 mb-16">
