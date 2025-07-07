@@ -4,7 +4,6 @@ import {
   Search, 
   Users, 
   Building2, 
-  Shield, 
   Star,
   CheckCircle,
   ArrowRight,
@@ -71,7 +70,7 @@ const HomePage = () => {
       description: 'Yapay zeka destekli algoritmalar ile size en uygun işleri bulun.'
     },
     {
-      icon: Shield,
+      icon: Building2,
       title: 'Güvenli Platform',
       description: 'KVKK uyumlu, güvenli veri işleme ve 2FA koruması.'
     },
