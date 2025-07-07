@@ -14,7 +14,8 @@ import {
   Clock,
   Search,
   Filter,
-  Briefcase
+  Briefcase,
+  Shield
 } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { db } from '../lib/supabase';
